@@ -1,0 +1,10 @@
+aiohttp
+pytest
+coverage
+tox
+gunicorn
+bottle
+kyoukai
+httptools
+ujson
+uvloop
