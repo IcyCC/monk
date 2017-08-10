@@ -28,7 +28,7 @@ class Response:
         self.headers = headers or dict()
         self.version = version or 1.1
 
-    def output(self, keep_alive):
+    def output(self, keep_alive=None):
 
         resp = list()
         resp.append("HTTP/{} {} {}".format(self.version, self.status, STATUS_CODES.get(self.status, "FAIL")))
@@ -38,5 +38,5 @@ class Response:
         resp.append("")
         resp.append("{}".format(self.body))
 
-        return "\r\n".join(resp)
+        return bytes("\r\n".join(resp), encoding="utf-8")
 

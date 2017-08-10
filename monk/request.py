@@ -27,6 +27,7 @@ class Request:
         self.url = parse_url(url_data)
         self.method = method
         self.version = version
+        self.raw_rul = url_data
 
         self.parsed_form = None
         self.parsed_args = None
