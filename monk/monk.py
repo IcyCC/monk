@@ -24,20 +24,17 @@ class Monk:
         response = handle(request)
 
         if isawaitable(response):
-            response = await response
+            resp = await response
 
-        write_response(response)
+        write_response(resp)
 
     @staticmethod
-    async def jsonfy(**kwargs):
+    def jsonfy(**kwargs):
         body = ujson.dumps(kwargs)
         resp = Response(body=body,version=1.1, content_type="application/json")
         return resp
 
-
     def run(self, host = "127.0.0.1", port=5000):
-
-
         server(host=host, port=port,request_handler=self.handle_request)
 
 

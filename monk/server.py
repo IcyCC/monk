@@ -60,7 +60,7 @@ class HttpProtocol(asyncio.Protocol):
                                method=self.parser.get_method(), version=self.parser.get_http_version(),
                                url_data=self.url)
 
-        self.loop.create_task(self.request_handler(self.request,self.write_response))
+        self.loop.create_task(self.request_handler(self.request, self.write_response))
 
     def write_response(self, response):
         data = response.output()
@@ -69,7 +69,7 @@ class HttpProtocol(asyncio.Protocol):
 
 
 def server(request_handler, host, port):
-    loop = asyncio.new_event_loop()
+    loop = asyncio.get_event_loop()
     asyncio.set_event_loop(loop)
 
     server_coroutine = loop.create_server(lambda: HttpProtocol(loop=loop,
