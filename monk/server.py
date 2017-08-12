@@ -4,6 +4,7 @@ import httptools
 import signal
 from inspect import isawaitable
 from monk.request import Request
+from monk.log import log
 
 class Signal:
     stopped = False
@@ -28,7 +29,9 @@ class HttpProtocol(asyncio.Protocol):
         self._total_request_size = 0
         self._timeout_handler = None
 
-    # Connection
+    """
+        asyncio Protocol methods
+    """
 
     def connection_made(self, transport):
         self.connections[self] = True
@@ -46,6 +49,10 @@ class HttpProtocol(asyncio.Protocol):
         finally:
             pass
 
+    """
+       httptools methods
+    """
+
     def on_header(self, name, value):
         self.headers.append((name.decode(), value.decode('utf-8')))
 
@@ -53,6 +60,7 @@ class HttpProtocol(asyncio.Protocol):
         self.body = body
 
     def on_url(self, url):
+        log.info('Request to {} '.format(str(url)))
         self.url = url
 
     def on_message_complete(self):
@@ -63,8 +71,30 @@ class HttpProtocol(asyncio.Protocol):
         self.loop.create_task(self.request_handler(self.request, self.write_response))
 
     def write_response(self, response):
+
+        keep_alive = self.parser.should_keep_alive()
         data = response.output()
         self.transport.write(data)
+        self.transport.close()
+        if not keep_alive:
+            self.transport.close()
+        else:
+            self.clean_up()
+
+
+    '''
+    Sever Manger
+    '''
+
+    def clean_up(self):
+        self.request = None
+        self.body = None
+        self.parser = None
+        self.url = None
+        self.headers = None
+
+    def terminate(self, message=''):
+        log.error("Connection Error: {}".format(message))
         self.transport.close()
 
 
@@ -74,7 +104,7 @@ def server(request_handler, host, port):
 
     server_coroutine = loop.create_server(lambda: HttpProtocol(loop=loop,
                                                                request_handler=request_handler),host=host,port=port)
-    print("Start Run at host {} port {} ".format(host,port))
+    log.info("Server Start at {} ".format(str(host)+":"+str(port)))
     http_server = loop.run_until_complete(server_coroutine)
 
     try:
