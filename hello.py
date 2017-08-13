@@ -34,6 +34,18 @@ async def test_404(request):
     """
     return app.abort_404("NOT FOUND")
 
+@app.route('/cookie')
+async def cookie_test(request):
+    """
+    cookie 测试
+    :param request: 
+    :return: 
+    """
+    cookie = request.cookie
+    resp = app.jsonfy(a=1)
+    resp.add_cookie(id=1234)
+    return resp
+
 # 静态路由测试 直接访问 /index.html 得到 static/index.html
 # Static routing test direct access to /index.html get static / index.html
 

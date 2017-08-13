@@ -160,6 +160,7 @@ class Response:
         self.status = status
         self.headers = headers or dict()
         self.version = bytes(version or '1.1', encoding="utf-8")
+        self.cookies = list()
 
     def output(self, keep_alive=None):
 
@@ -168,8 +169,15 @@ class Response:
         resp.append(b"Content-Type: %b" % self.content_type)
         resp.append(b"Content-Length: %d" % len(self.body))
         resp.append(b"Cache-Control: %b" % bytes("alive" if keep_alive else "close", encoding="utf-8"))
+        for cookie in self.cookies:
+            resp.append(b"Set-Cookie:%b" % cookie)
         resp.append(b"")
         resp.append(b"%b" % self.body)
 
         return b"\r\n".join(resp)
+
+    def add_cookie(self,**kwargs):
+        for key, value in kwargs.items():
+            self.cookies.append(bytes(" {}={};".format(key, value), encoding="utf-8"))
+
 

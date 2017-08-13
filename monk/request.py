@@ -69,3 +69,18 @@ class Request:
             except:
                 pass
         return self.parsed_json
+
+    @property
+    def cookie(self):
+        raw_cookie = self.header.get('Cookie', None)
+        if raw_cookie is None:
+            return dict()
+        cookie_jar = dict()
+        cookies = str(raw_cookie).split(";")
+        for cookie in cookies:
+            c = cookie.split('=')
+            key = c[0].strip(' ')
+            value = c[1].strip(' ')
+            cookie_jar.update({key:value})
+
+        return cookie_jar

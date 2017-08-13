@@ -54,7 +54,7 @@ class HttpProtocol(asyncio.Protocol):
     """
 
     def on_header(self, name, value):
-        self.headers.append((name.decode(), value.decode('utf-8')))
+        self.headers.append((name.decode('utf-8'), value.decode('utf-8')))
 
     def on_body(self, body):
         self.body = body
