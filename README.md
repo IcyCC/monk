@@ -3,7 +3,7 @@
 
 ## environment
 
-Only for *nix because of httptools and uvloop
+Only for *nix because of httptools and uvloop. And python 3.5++.
 
 ## Simple Use
 
