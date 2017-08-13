@@ -8,3 +8,4 @@ kyoukai
 httptools
 ujson
 uvloop
+aiofiles
