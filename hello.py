@@ -1,7 +1,7 @@
 from monk import monk
+from monk.restful import ResourcesBase
 
 app = monk.Monk()
-
 
 @app.route("/")
 async def index(request):
@@ -48,5 +48,20 @@ async def cookie_test(request):
 
 # 静态路由测试 直接访问 /index.html 得到 static/index.html
 # Static routing test direct access to /index.html get static / index.html
+
+
+class Pig(ResourcesBase):
+    """
+    RESTful test 
+    http://127.0.0.1:5000/pig method='GET' 
+    """
+    def __init__(self, app):
+        ResourcesBase.__init__(self, app=app)
+        self.app = app
+
+    async def get(self, request):
+        return app.html("<h1>PIG TEST</h1>")
+
+pig = Pig(app)
 
 app.run()

@@ -75,7 +75,6 @@ class HttpProtocol(asyncio.Protocol):
         keep_alive = self.parser.should_keep_alive()
         data = response.output()
         self.transport.write(data)
-        self.transport.close()
         if not keep_alive:
             self.transport.close()
         else:
@@ -89,9 +88,9 @@ class HttpProtocol(asyncio.Protocol):
     def clean_up(self):
         self.request = None
         self.body = None
-        self.parser = None
         self.url = None
         self.headers = None
+        self.parser = None
 
     def terminate(self, message=''):
         log.error("Connection Error: {}".format(message))
