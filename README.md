@@ -33,7 +33,7 @@ app.run()
 Request url like /index.html, will access ./static/index.html .
 All your static file should be put into static folder.
 
-## RestFULL 
+## RESTfull 
 
 Define a class inherit monk.restful.ResourcesBase and *async def* like *put,get,post,delete*
 Registered it with app. You will get /<class_name_lower_case> url
