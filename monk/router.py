@@ -21,12 +21,12 @@ class Router:
         self.routes[url] = Route(methods=methods, url=url, handle=handle)
 
     def get(self, request):
-        try:
-            url = str(request.url.path, encoding='utf-8')
-            route = self.routes.get(url, None)
-            if request.method not in route.methods:
-                log.error("NOT support method {} ".format(request.method))
-                return None
-        finally:
-            return route.handle
+        url = str(request.url.path, encoding='utf-8')
+        route = self.routes.get(url, None)
+        if route is None:
+            return None
+        if request.method not in route.methods:
+            log.error("NOT support method {} ".format(request.method))
+            return None
+        return route.handle
 
