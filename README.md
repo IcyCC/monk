@@ -1,9 +1,11 @@
 # -- Monk
+ ![Progress](http://progressed.io/bar/28?title=progress)  ![MIT](https://img.shields.io/packagist/l/doctrine/orm.svg)  
+
  A async web framework with RESTful imitate Sanic
 
 ## environment
 
-Only for *nix because of httptools and uvloop. And python 3.5++.
+Only for *nix because of httptools and uvloop
 
 ## Simple Use
 
@@ -11,7 +13,7 @@ Like flask you should define a *app*, then use *app.route* decorate a function w
 *request* and return a *Response*. *request* provide like *args,form,json*.And you can make a response
 use like *app.jsonfy app.html app.abort_404*
 
-```
+```python
 from monk import monk
 
 app = monk.Monk()
@@ -38,7 +40,7 @@ All your static file should be put into static folder.
 Define a class inherit monk.restful.ResourcesBase and *async def* like *put,get,post,delete*
 Registered it with app. You will get /<class_name_lower_case> url
 
-```angular2html
+```python
 from monk.restful import ResourcesBase
 
 class Pig(ResourcesBase):
