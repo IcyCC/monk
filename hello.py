@@ -34,6 +34,7 @@ async def test_404(request):
     """
     return app.abort_404("NOT FOUND")
 
+
 @app.route('/cookie')
 async def cookie_test(request):
     """
@@ -64,4 +65,12 @@ class Pig(ResourcesBase):
 
 pig = Pig(app)
 
-app.run()
+
+
+@app.route("/time_out")
+async def time_out(request):
+    import time
+    time.sleep(10)
+    return app.html("<h1>PIG TEST</h1>")
+
+app.run(time_out=60)

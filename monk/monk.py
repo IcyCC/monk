@@ -77,8 +77,8 @@ class Monk:
         else:
             return False
 
-    def run(self, host="127.0.0.1", port=5000):
-        server(host=host, port=port, request_handler=self.handle_request)
+    def run(self, host="127.0.0.1", port=5000, time_out=60):
+        server(host=host, port=port, request_handler=self.handle_request, request_timeout=time_out)
 
 
 

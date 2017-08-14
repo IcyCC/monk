@@ -1,10 +1,12 @@
 import asyncio
 import aiohttp
+import functools
 import httptools
 import signal
 from inspect import isawaitable
 from monk.request import Request
 from monk.log import log
+
 
 class Signal:
     stopped = False
@@ -27,8 +29,7 @@ class HttpProtocol(asyncio.Protocol):
         self.request_handler = request_handler
         self.request_timeout = request_timeout
         self._total_request_size = 0
-        self._timeout_handler = None
-
+        self._timeout_handle = None
     """
         asyncio Protocol methods
     """
@@ -36,6 +37,8 @@ class HttpProtocol(asyncio.Protocol):
     def connection_made(self, transport):
         self.connections[self] = True
         self.transport = transport
+        self._timeout_handle = self.loop.call_later(self.request_timeout, functools.partial(self.terminate,
+                                                                                            message="Time Out Request"))
 
     def connection_lost(self, exc):
         del self.connections[self]
@@ -67,11 +70,10 @@ class HttpProtocol(asyncio.Protocol):
         self.request = Request(body=self.body, header=dict(self.headers),
                                method=self.parser.get_method(), version=self.parser.get_http_version(),
                                url_data=self.url)
-
         self.loop.create_task(self.request_handler(self.request, self.write_response))
 
     def write_response(self, response):
-
+        self._timeout_handle.cancel()
         keep_alive = self.parser.should_keep_alive()
         data = response.output()
         self.transport.write(data)
@@ -85,6 +87,7 @@ class HttpProtocol(asyncio.Protocol):
     Sever Manger
     '''
 
+
     def clean_up(self):
         self.request = None
         self.body = None
@@ -97,12 +100,14 @@ class HttpProtocol(asyncio.Protocol):
         self.transport.close()
 
 
-def server(request_handler, host, port):
+def server(request_handler, host, port, request_timeout):
     loop = asyncio.get_event_loop()
     asyncio.set_event_loop(loop)
 
     server_coroutine = loop.create_server(lambda: HttpProtocol(loop=loop,
-                                                               request_handler=request_handler),host=host,port=port)
+                                                               request_handler=request_handler,
+                                                               request_timeout= request_timeout),
+                                          host=host, port=port)
     log.info("Server Start at {} ".format(str(host)+":"+str(port)))
     http_server = loop.run_until_complete(server_coroutine)
 
