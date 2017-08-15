@@ -7,9 +7,9 @@ from monk.server import server
 from monk.static import read_file
 from monk.config import Config
 from monk.log import log
+from monk.hook import Hook
 import ujson
 import os
-
 
 
 class Monk:
@@ -17,6 +17,7 @@ class Monk:
     def __init__(self, router=None):
         self.router = router or Router()
         self.config = Config()
+        self.hook = Hook()  # @monk.hook.after_request_handle like this
 
     def route(self, url, methods=None):
         def decorator(func):
@@ -35,6 +36,11 @@ class Monk:
                             content_type=TYPE_MAP.get(file_type, "text/plain"))
             write_response(resp)
 
+        for hooker in self.hook.after_request:
+            request = hooker(request)
+            if isawaitable(request):
+                request = await request
+
         handle = self.router.get(request=request)
         if handle is None:
             write_response(self.abort_404("Not found method"))
@@ -43,9 +49,14 @@ class Monk:
         response = handle(request)
 
         if isawaitable(response):
-            resp = await response
+            response = await response
 
-        write_response(resp)
+        for hooker in self.hook.before_response:
+            response = hooker(response)
+            if isawaitable(response):
+                response = await response
+
+        write_response(response)
 
     @staticmethod
     def jsonfy(**kwargs):

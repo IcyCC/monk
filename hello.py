@@ -65,12 +65,15 @@ class Pig(ResourcesBase):
 
 pig = Pig(app)
 
-
-
 @app.route("/time_out")
 async def time_out(request):
     import time
     time.sleep(10)
     return app.html("<h1>PIG TEST</h1>")
+
+
+@app.hook.bofore_response_handle
+async def response_test():
+    return app.jsonfy(a=1, b=2, c='hook')
 
 app.run(time_out=60)
