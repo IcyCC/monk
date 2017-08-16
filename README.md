@@ -58,3 +58,16 @@ class Pig(ResourcesBase):
 pig = Pig(app)
 
 ```
+
+## Hook
+
+when after receive a request ant before a response send,
+you can change it by hook. Hook function receive a request
+ or a response and return a request or response
+
+```python
+@app.hook.bofore_response_handle
+async def response_test(response):
+    return app.jsonfy(a=1, b=2, c='hook')
+
+```
