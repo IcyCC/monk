@@ -73,7 +73,7 @@ async def time_out(request):
 
 
 @app.hook.bofore_response_handle
-async def response_test():
+async def response_test(response):
     return app.jsonfy(a=1, b=2, c='hook')
 
 app.run(time_out=60)
