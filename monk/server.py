@@ -76,7 +76,7 @@ class HttpProtocol(asyncio.Protocol):
         self._timeout_handle.cancel()
         if not self.parser:
             self.clean_up()
-            return 
+            return
         keep_alive = self.parser.should_keep_alive()
         data = response.output()
         self.transport.write(data)
@@ -89,7 +89,6 @@ class HttpProtocol(asyncio.Protocol):
     '''
     Sever Manger
     '''
-
 
     def clean_up(self):
         self.request = None
