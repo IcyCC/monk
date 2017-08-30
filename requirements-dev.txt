@@ -9,3 +9,4 @@ httptools
 ujson
 uvloop
 aiofiles
+aiomysql

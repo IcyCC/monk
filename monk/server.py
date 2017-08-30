@@ -74,6 +74,9 @@ class HttpProtocol(asyncio.Protocol):
 
     def write_response(self, response):
         self._timeout_handle.cancel()
+        if not self.parser:
+            self.clean_up()
+            return 
         keep_alive = self.parser.should_keep_alive()
         data = response.output()
         self.transport.write(data)
