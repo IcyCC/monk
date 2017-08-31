@@ -58,7 +58,7 @@ class Monk:
 
         write_response(response)
 
-    @staticmethod
+    @classmethod
     def jsonfy(**kwargs):
         body = ujson.dumps(kwargs)
         resp = Response(body=bytes(body,encoding="utf-8"), version='1.1', content_type="application/json")
@@ -87,6 +87,17 @@ class Monk:
             return True
         else:
             return False
+
+    async def file(self, file):
+        path = self.config.static_path + '/' + file
+        path = os.path.abspath(path)
+        log.info("Static file read path {} ".format(path))
+        context = await read_file(path)
+        file_type = str(file).split('.')[-1]
+        resp = Response(body=context, version='1.1',
+                        content_type=TYPE_MAP.get(file_type, "text/plain"))
+        return resp
+
 
     def run(self, host="127.0.0.1", port=5000, time_out=60):
         server(host=host, port=port, request_handler=self.handle_request, request_timeout=time_out)
