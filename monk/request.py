@@ -48,7 +48,7 @@ class Request:
     def form(self):
         if self.method == "POST":
             content_type, parameters = parse_header(self.header.get('Content-Type'))
-            if content_type == "application/x-www-form-urlencoded":
+            if content_type == "multipart/form-data":
                 self.parsed_form = RequestDict(parse_qs(self.body))
         else:
             self.parsed_form = dict()
