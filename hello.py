@@ -76,4 +76,8 @@ async def time_out(request):
 # async def response_test(response):
 #     return app.jsonfy(a=1, b=2, c='hook')
 
+@app.route('/redirect')
+async def redirect_test(request):
+    return app.redirect("index.html")
+
 app.run(time_out=60)

@@ -16,7 +16,7 @@ class Monk:
 
     def __init__(self, router=None):
         self.router = router or Router()
-        self.config = Config()
+        self.config = dict()
         self.hook = Hook()  # @monk.hook.after_request_handle like this
 
     def route(self, url, methods=None):
@@ -27,11 +27,11 @@ class Monk:
 
     async def handle_request(self, request, write_response):
         if self.is_static(request) is True:
-            path = self.config.static_path+str(request.url.path, encoding="utf-8")
+            path = self.config.get('static_path')+str(request.url.path, encoding="utf-8")
             path = os.path.abspath(path)
             log.info("Static file read path {} ".format(path))
             context = await read_file(path)
-            file_type = str(request.url.path,encoding="utf-8").split('.')[-1]
+            file_type = str(request.url.path, encoding="utf-8").split('.')[-1]
             resp = Response(body=context, version='1.1',
                             content_type=TYPE_MAP.get(file_type, "text/plain"))
             write_response(resp)
@@ -89,7 +89,7 @@ class Monk:
             return False
 
     async def file(self, file):
-        path = self.config.static_path + '/' + file
+        path = self.config.get('static_path') + '/' + file
         path = os.path.abspath(path)
         log.info("Static file read path {} ".format(path))
         context = await read_file(path)
@@ -98,8 +98,15 @@ class Monk:
                         content_type=TYPE_MAP.get(file_type, "text/plain"))
         return resp
 
+    def redirect(self, url):
+        path = "http://"+self.config.get("host")+":"+str(self.config.get("port"))+'/'+str(url)
+        resp = Response(body=None, headers=dict(Location=path), status=301, version='1.1')
+        return resp
 
     def run(self, host="127.0.0.1", port=5000, time_out=60):
+        self.config['static_path'] = './static'
+        self.config['host'] = host
+        self.config['port'] = port
         server(host=host, port=port, request_handler=self.handle_request, request_timeout=time_out)
 
 

@@ -2,6 +2,7 @@ import ujson
 
 STATUS_CODES = {
     200: b'OK',
+    301: b'Moved Permanently',
     400: b'Bad Request',
     401: b'Unauthorized',
     402: b'Payment Required',
@@ -166,13 +167,17 @@ class Response:
 
         resp = list()
         resp.append(b"HTTP/%b %d %b" % (self.version, self.status, STATUS_CODES.get(self.status, "FAIL")))
-        resp.append(b"Content-Type: %b" % self.content_type)
-        resp.append(b"Content-Length: %d" % len(self.body))
+
         resp.append(b"Cache-Control: %b" % bytes("alive" if keep_alive else "close", encoding="utf-8"))
         for cookie in self.cookies:
             resp.append(b"Set-Cookie:%b" % cookie)
-        resp.append(b"")
-        resp.append(b"%b" % self.body)
+        for k, v in self.headers.items():
+            resp.append(b'%b: %b' % (bytes(k, encoding="utf-8"), bytes(v, encoding="utf-8")))
+        if self.body is not None:
+            resp.append(b"Content-Type: %b" % self.content_type)
+            resp.append(b"Content-Length: %d" % len(self.body))
+            resp.append(b"")
+            resp.append(b"%b" % self.body)
 
         return b"\r\n".join(resp)
 
