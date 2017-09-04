@@ -6,10 +6,14 @@ import signal
 from inspect import isawaitable
 from monk.request import Request
 from monk.log import log
+import uvloop
 
+loop = uvloop.new_event_loop()
+asyncio.set_event_loop(loop)
 
 class Signal:
     stopped = False
+
 
 class HttpProtocol(asyncio.Protocol):
 
@@ -103,8 +107,8 @@ class HttpProtocol(asyncio.Protocol):
 
 
 def server(request_handler, host, port, request_timeout):
-    loop = asyncio.get_event_loop()
-    asyncio.set_event_loop(loop)
+
+    global loop
 
     server_coroutine = loop.create_server(lambda: HttpProtocol(loop=loop,
                                                                request_handler=request_handler,

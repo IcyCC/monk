@@ -181,7 +181,7 @@ class Response:
 
         return b"\r\n".join(resp)
 
-    def add_cookie(self,**kwargs):
+    def add_cookie(self, **kwargs):
         for key, value in kwargs.items():
             self.cookies.append(bytes(" {}={};".format(key, value), encoding="utf-8"))
 

@@ -58,6 +58,20 @@ class Monk:
 
         write_response(response)
 
+    @staticmethod
+    def is_static(request):
+        """
+        return is request static or not
+        :param request:
+        :return:
+        """
+        url = str(request.url.path, encoding="utf-8").split('/')[-1]
+
+        if '.' in url:
+            return True
+        else:
+            return False
+
     @classmethod
     def jsonfy(**kwargs):
         body = ujson.dumps(kwargs)
@@ -73,20 +87,6 @@ class Monk:
     def abort_404(body="Not found"):
         resp = Response(body=bytes(body, encoding="utf-8"), version='1.1', status=404)
         return resp
-
-    @staticmethod
-    def is_static(request):
-        """
-        return is request static or not
-        :param request: 
-        :return: 
-        """
-        url = str(request.url.path, encoding="utf-8").split('/')[-1]
-
-        if '.' in url:
-            return True
-        else:
-            return False
 
     async def file(self, file):
         path = self.config.get('static_path') + '/' + file
